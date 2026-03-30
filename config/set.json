@@ -57,7 +57,6 @@
         "2K",
         "4K"
       ],
-      "max": 1,
       "cut": [
         1,
         2,
@@ -65,6 +64,7 @@
         6,
         9
       ],
+      "max": 1,
       "request": {
         "size": "aspect_ratio",
         "quality": "resolution"
