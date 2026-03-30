@@ -95,6 +95,25 @@ app.get('/api/get_set', (req, res) => {
   }
 });
 
+// 保存配置到 JSON 文件
+app.post('/api/config/save-json', (req, res) => {
+  try {
+    const config = req.body;
+    const configPath = path.join(__dirname, '../config/set.json');
+    
+    // 验证基本结构
+    if (!config.server || !config.models || !config.llm) {
+      return res.status(400).json({ success: false, error: '配置结构不完整' });
+    }
+    
+    // 写入文件
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
+    res.json({ success: true, msg: '配置已保存' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // 生成图片
 app.post('/api/generate', async (req, res) => {
   try {
