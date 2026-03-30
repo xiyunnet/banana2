@@ -114,6 +114,96 @@ app.post('/api/config/save-json', (req, res) => {
   }
 });
 
+// ==================== Prompts API ====================
+
+// 获取提示词文件列表
+app.get('/api/prompts/list', (req, res) => {
+  try {
+    const promptsDir = path.join(__dirname, '../config');
+    const files = fs.readdirSync(promptsDir)
+      .filter(f => f.endsWith('.prompt'))
+      .map(f => {
+        const stat = fs.statSync(path.join(promptsDir, f));
+        return {
+          name: f,
+          size: stat.size,
+          modified: stat.mtime
+        };
+      });
+    res.json({ success: true, files });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取单个提示词文件内容
+app.get('/api/prompts/get', (req, res) => {
+  try {
+    const file = req.query.file;
+    if (!file || !file.endsWith('.prompt')) {
+      return res.status(400).json({ success: false, error: '无效的文件名' });
+    }
+    
+    const filePath = path.join(__dirname, '../config', file);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, error: '文件不存在' });
+    }
+    
+    const content = fs.readFileSync(filePath, 'utf-8');
+    res.json({ success: true, content, name: file });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 保存提示词文件
+app.post('/api/prompts/save', (req, res) => {
+  try {
+    const { name, content, originalName } = req.body;
+    
+    if (!name || !name.endsWith('.prompt')) {
+      return res.status(400).json({ success: false, error: '无效的文件名' });
+    }
+    
+    const configDir = path.join(__dirname, '../config');
+    const filePath = path.join(configDir, name);
+    
+    // 如果是重命名，删除旧文件
+    if (originalName && originalName !== name) {
+      const oldPath = path.join(configDir, originalName);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+    
+    fs.writeFileSync(filePath, content || '', 'utf-8');
+    res.json({ success: true, msg: '保存成功', name });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 删除提示词文件
+app.post('/api/prompts/delete', (req, res) => {
+  try {
+    const { name } = req.body;
+    
+    if (!name || !name.endsWith('.prompt')) {
+      return res.status(400).json({ success: false, error: '无效的文件名' });
+    }
+    
+    const filePath = path.join(__dirname, '../config', name);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, error: '文件不存在' });
+    }
+    
+    fs.unlinkSync(filePath);
+    res.json({ success: true, msg: '删除成功' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // 生成图片
 app.post('/api/generate', async (req, res) => {
   try {
