@@ -4,16 +4,25 @@
  */
 
 // 全局翻译函数 - 供组件使用
-// 如果主窗口有 t 函数则使用，否则返回 key 或默认值
+// 如果主窗口有 t 函数则使用，否则返回默认值或 key
 function t(key, defaultValue) {
     if (typeof window.parent !== 'undefined' && typeof window.parent.t === 'function') {
-        return window.parent.t(key);
+        const result = window.parent.t(key);
+        // 如果返回的是 key 本身（未找到翻译），则使用默认值
+        if (result === key && defaultValue !== undefined) {
+            return defaultValue;
+        }
+        return result;
     }
     if (typeof window.t === 'function') {
-        return window.t(key);
+        const result = window.t(key);
+        if (result === key && defaultValue !== undefined) {
+            return defaultValue;
+        }
+        return result;
     }
     // 返回默认值或 key
-    return defaultValue || key;
+    return defaultValue !== undefined ? defaultValue : key;
 }
 
 // 弹窗管理器

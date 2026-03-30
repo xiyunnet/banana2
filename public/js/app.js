@@ -372,23 +372,23 @@ async function sendConfigToBackend() {
 
 // 显示设置弹窗
 function showSettings() {
-    win('settings', '设置', 'settings.html', 520, 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
+    win('settings', t('settings.title', '设置'), 'settings.html', 520, 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
 }
 
 // 显示AI提示词弹窗
 function showPromptModal() {
-    win('ai-prompt', 'AI提示词工具 - 创建多图片prompt', 'ai-prompt.html', 700, 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
+    win('ai-prompt', t('aiPrompt.title', 'AI提示词工具'), 'ai-prompt.html', 700, 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
 }
 
 // 显示错误弹窗
 function showErrorModal(errorMsg) {
     window._winErrorMsg = errorMsg;
-    win('error', '错误信息', 'error.html', 500, '#fee2e2');
+    win('error', t('error.title', '错误信息'), 'error.html', 500, '#fee2e2');
 }
 
 // 显示关于弹窗
 function showAboutModal() {
-    win('about', '关于', 'about.html', 450, '');
+    win('about', t('about.title', '关于'), 'about.html', 450, '');
 }
 
 // 加载作品列表
@@ -465,13 +465,13 @@ function renderGallery() {
         const infoItems = [];
         infoItems.push(work.ratio || '1:1');
         infoItems.push(work.quality || '2K');
-        if (work.cut > 1) infoItems.push(`${work.cut}宫格`);
+        if (work.cut > 1) infoItems.push(`${work.cut}${t('params.grid', '宫格')}`);
         const infoText = infoItems.join(' · ');
         
         // 处理中或失败的任务
         if (work.state === 1 || work.state === 99) {
             const statusClass = work.state === 1 ? 'status-pending' : 'status-failed';
-            const statusText = work.state === 1 ? '正在生成中' : '生成失败';
+            const statusText = work.state === 1 ? t('taskDetail.generating', '正在生成中') : t('taskDetail.failed', '生成失败');
             const icon = work.state === 1 ? 
                 `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>` :
                 `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
@@ -511,7 +511,7 @@ function renderGallery() {
                     <div class="meta">
                         <span>${infoText}</span>
                         <span class="date">${dateStr}</span>
-                        <button class="folder-btn" onclick="event.stopPropagation(); openFolder(${work.id})" title="打开文件夹">📁</button>
+                        <button class="folder-btn" onclick="event.stopPropagation(); openFolder(${work.id})" title="${t('viewer.openFolder', '打开文件夹')}">📁</button>
                     </div>
                 </div>
             </div>
@@ -709,10 +709,11 @@ function renderUploadedImages() {
         }
         
         const title = img.uploaded ? '已上传: ' + (img.url || '') : img.name;
+        const errorText = t('messages.loadingFailed', 'Load Failed');
         
         return `
             <div class="upload-item ${img.uploaded ? 'uploaded' : ''}">
-                <img src="${imgSrc}" alt="${img.name}" title="${title}" onerror="this.src='data:image/svg+xml,${encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><rect fill=\"#fee2e2\" width=\"100\" height=\"100\"/><text x=\"50\" y=\"50\" text-anchor=\"middle\" dy=\".3em\" fill=\"#ef4444\" font-size=\"10\">加载失败</text></svg>')}'">
+                <img src="${imgSrc}" alt="${img.name}" title="${title}" onerror="this.src='data:image/svg+xml,${encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><rect fill=\"#fee2e2\" width=\"100\" height=\"100\"/><text x=\"50\" y=\"50\" text-anchor=\"middle\" dy=\".3em\" fill=\"#ef4444\" font-size=\"10\">' + '${errorText}' + '</text></svg>')}'">
                 ${img.uploaded ? '<div class="upload-badge">✓</div>' : ''}
                 <button class="remove" onclick="removeUploadedImage(${index})">×</button>
             </div>
