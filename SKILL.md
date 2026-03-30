@@ -53,6 +53,19 @@ Nano Banana V2 is a powerful AI image generation and smart splitting tool based 
 
 ---
 
+## Screenshots
+
+### Main Interface
+![Main Interface](docs/images/screenshot-main.png)
+
+### Detail View
+![Detail View](docs/images/screenshot-detail.png)
+
+### Detail View (Dark Theme)
+![Detail View Dark](docs/images/screenshot-detail1.png)
+
+---
+
 ## Quick Start
 
 ### 1. Install Dependencies
