@@ -159,25 +159,29 @@ app.get('/api/prompts/get', (req, res) => {
 // 保存提示词文件
 app.post('/api/prompts/save', (req, res) => {
   try {
-    const { name, content, originalName } = req.body;
+    const { oldName, newName, name, content, originalName } = req.body;
     
-    if (!name || !name.endsWith('.prompt')) {
+    // 兼容两种参数格式
+    const targetName = newName || name;
+    const sourceName = oldName || originalName;
+    
+    if (!targetName || !targetName.endsWith('.prompt')) {
       return res.status(400).json({ success: false, error: '无效的文件名' });
     }
     
     const configDir = path.join(__dirname, '../config');
-    const filePath = path.join(configDir, name);
+    const filePath = path.join(configDir, targetName);
     
     // 如果是重命名，删除旧文件
-    if (originalName && originalName !== name) {
-      const oldPath = path.join(configDir, originalName);
+    if (sourceName && sourceName !== targetName) {
+      const oldPath = path.join(configDir, sourceName);
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
     }
     
     fs.writeFileSync(filePath, content || '', 'utf-8');
-    res.json({ success: true, msg: '保存成功', name });
+    res.json({ success: true, msg: '保存成功', name: targetName });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -186,13 +190,16 @@ app.post('/api/prompts/save', (req, res) => {
 // 删除提示词文件
 app.post('/api/prompts/delete', (req, res) => {
   try {
-    const { name } = req.body;
+    const { filename, name } = req.body;
     
-    if (!name || !name.endsWith('.prompt')) {
+    // 兼容两种参数名
+    const targetName = filename || name;
+    
+    if (!targetName || !targetName.endsWith('.prompt')) {
       return res.status(400).json({ success: false, error: '无效的文件名' });
     }
     
-    const filePath = path.join(__dirname, '../config', name);
+    const filePath = path.join(__dirname, '../config', targetName);
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ success: false, error: '文件不存在' });
     }
