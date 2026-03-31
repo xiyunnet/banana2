@@ -36,7 +36,7 @@ Yunxi AI Image Generator & Splitter is a web-based AI image generation and manag
 ### Detail View
 ![Detail View](docs/images/screenshot-detail.png)
 
-### Detail View (Dark Theme)
+### Detail View 
 ![Detail View Dark](docs/images/screenshot-detail1.png)
 
 ---
